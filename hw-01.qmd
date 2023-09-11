@@ -257,18 +257,18 @@ ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point(aes(color = metro)) +
   geom_smooth(se = FALSE)+
   labs(
-    x = "Homeownership",
-    y = "Poverty",
-    title = "Scatter Plot with Smoothing Line for Metro"
+    x = "homeownership",
+    y = "poverty",
+    title = "Plot G"
   )
 
 #Scatter plot shows the segregation of data points based on metro variable only
 ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point(aes(color = metro)) +
   labs(
-    x = "Homeownership",
-    y = "Poverty",
-    title = "Scatter Plot with Smoothing Line for Metro"
+    x = "homeownership",
+    y = "poverty",
+    title = "Plot H"
   )
 ```
 
@@ -321,3 +321,124 @@ ggplot(data = filtered_data, aes(x = year, y = nhood, fill = price_per_bedroom))
 **Observation**- For the above data, the general trend is upwards, i.e. price is increasing as time passes. For some neighborhoods there is a steep increase, and then correction, but overall trend is upwards (positive).
 
 ## 5 - Napoleon's march.
+
+The instructions for this exercise are simple: recreate the Napoleon\'s march plot by Charles John Minard in ggplot2. The data is provided as a list, saved as `napoleon.rds`. Read it in using `read_rds()`. This object has three elements: `cities`, `temperatures`, and `troops`. Each of these is a data frame, and the three of them combined contain all of the data you need to recreate the visualization. Your goal isn\'t to create an exact replica of the original plot, but to get as close to it as you can using code you understand and can describe articulately in your response. I\'ll be the first to say that if you google \"Napoleon\'s march in ggplot2\", you\'ll find a bunch of blog posts, tutorials, etc. that walk you through how to recreate this visualization with ggplot2. So you might be thinking, \"why am I being asked to copy something off the internet for my homework?\" Well, this is an exercise in (1) working with web resources and citing them properly, (2) understanding someone else\'s ggplot2 code and reproducing their work, (3) describing what that code does in your own words, and finally (4) putting some final touches to make the final product your own. Some more guidelines below:
+
+-   You should make sure your response properly cites all of the resources you use. I\'m defining \"use\" to include \"browse, read, get inspired by, or directly borrow snippets of code from\". You don\'t need to worry about formal citations, it\'s okay to make a list with links to your resources and provide a brief summary of how you used each one.
+
+-   For this exercise, you\'re asked to describe what your code does (instead of interpreting the visualization, since we already did that in class). If you write the code, it should be straightforward for you to describe it. If you borrow any code from outside resources, you need to understand what that code does, and describe it, ***in your own words***. (This is important, you\'re allowed to use found code, but you are not allowed to copy someone\'s blog post or tutorial as your description of their code.)
+
+-   Finally, you should personalize the visualization with your own touch. You can do this in a myriad of ways, e.g., change colors, annotations, labels, etc. This change should be made to make the plot more like the original in some way. You need to explicitly call out what change you made and why you made it.
+
+    Importing/reading the code using the rds() function after setting file path to 'data' folder
+
+    ```{r warning = FALSE, message=FALSE}
+
+    #Setting directory to data folder, where napoleon.rds data exists
+    setwd("/cloud/project/data")
+    troops <- readRDS("napoleon.rds")
+    ```
+
+    Now
+
+    ```{r warning = FALSE, message=FALSE}
+
+    library(ggplot2)
+    library(scales)        # additional formatting for scales
+    library(grid)          # combining plots
+    library(gridExtra)     # combining plots
+    library(dplyr)         # tidy data manipulations
+
+    #Code is to read the data from the HistData package
+    #Troop data
+    data(Minard.troops, package="HistData")
+    str(Minard.troops)
+    #Cities Data
+    data(Minard.cities, package="HistData")
+    str(Minard.cities)
+    #Temperature data
+    data(Minard.temp, package="HistData")
+    str(Minard.temp)
+
+    #Below plot is for plotting the latitude and longitude the troops travelled
+    #Width is set as the number of survivors to show the strength of the army
+    #Knitr function is used to scale the graph
+     breaks <- c(1, 2, 3) * 10^5 #New vector setis defined
+    ggplot(Minard.troops, aes(long, lat)) +
+            geom_path(aes(size = survivors, colour = direction, group = group),
+                      lineend="round") +
+        scale_size("Survivors", range = c(1,10), #c(0.5, 15),
+                   breaks=breaks, labels=scales::comma(breaks)) +
+        scale_color_manual("Direction", 
+                           values = c("cornsilk3", "black"), 
+                           labels=c("Advance", "Retreat")) 
+
+    #ggplot trick to assign it to a variable to use later
+    plot_troops <- last_plot()
+
+
+    #Cities are now appended on top of the above plot
+    plot_troops + geom_text(data = Minard.cities, aes(label = city), size = 3)
+
+    #Package ggrepel is used to automatically move the labels away from points and to ensure none of the labels overlap
+    if (!require(ggrepel)) {install.packages("ggrepel"); require(ggrepel)}
+    library(ggrepel)
+    plot_troops +   
+        geom_point(data = Minard.cities) +
+        geom_text_repel(data = Minard.cities, aes(label = city))
+
+    #ggplot trick to assign it to a variable to use later
+    plot_troops_cities <- last_plot()
+
+    #Plotting the temperature with custom size
+    ggplot(Minard.temp, aes(long, temp)) +
+        geom_path(color="grey", size=1.5) +
+        geom_point(size=2)
+
+    #Below code is to standardize the temperature format by combining temperature and date
+    Minard.temp <- Minard.temp %>%
+        mutate(label = paste0(temp, "° ", date))
+    head(Minard.temp$label)
+
+    #These plots are pushing the right most two points outside the graph. Using geom_text_repel to bring back the data
+    ggplot(Minard.temp, aes(long, temp)) +
+        geom_path(color="grey", size=1.5) +
+        geom_point(size=1) +
+      geom_text_repel(aes(label=label), size=2.5)
+
+    #ggplot trick to assign it to a variable to use later
+    plot_temp <- last_plot()
+
+
+    #Now, we have to assemble the two graphs one below the other
+    grid.arrange(plot_troops_cities, plot_temp)
+
+    #In troops and cities plot, we have to set X axis limits to a range that will coincide with those for the plot of temperature
+    #Remove X and Y axis labels scales
+    #Remove legends for survivors and directions
+    plot_troops_cities +
+      coord_cartesian(xlim = c(24, 38)) +
+      labs(x = "Longitude", y = "Latitude",title="Minard's version of Napoleon's March") +
+      guides(color = FALSE, size = FALSE)
+
+    #ggplot trick to assign it to a variable to use later
+    plot_troops_cities_fixed <- last_plot() 
+
+    #Setting theme for temperature graph
+    plot_temp + 
+      coord_cartesian(xlim = c(24, 38)) +
+      labs(x="Napoleon's March Duration", y="Temperature",caption = "Michael Friendly (2018), Minard meets ggplot2") + 
+      theme_bw() +
+      theme(panel.grid.major.x = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text.x = element_blank(), axis.ticks = element_blank(),
+            panel.border = element_blank())
+
+    #ggplot trick to assign it to a variable to use later
+    plot_temp_fixed <- last_plot()
+
+    #Function to combine both the plots into one single plot and add a border
+    grid.arrange(plot_troops_cities_fixed, plot_temp_fixed, nrow=2, heights=c(3.5, 1.2))
+    grid.rect(width = .99, height = .99, gp = gpar(lwd = 2, col = "gray", fill = NA))
+    ```
