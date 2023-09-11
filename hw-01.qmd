@@ -6,12 +6,14 @@ date: 2023-09-08 (YYYY-MM-DD)
 toc: true
 ---
 
-##Setup
-```{r include=FALSE, warning = FALSE, message=FALSE}
+Setup of Library functions and installing packages needed for homework
+
+```{r setup,include=FALSE, warning = FALSE, message=FALSE}
 # Install & load packages
 #Accidents dataset is within dsbox package
 
 install.packages("pacman")
+install.packages("openintro")
 pacman::p_load("tidyverse")
 pacman::p_load_gh("rstudio-education/dsbox")
 
@@ -37,24 +39,33 @@ knitr::opts_chunk$set(
 
 ## 1 - Road traffic accidents in Edinburgh
 
+Below code chunk is to create a new day type vector to assign each day as weekday or weekend.
 
-```{r warning = FALSE, message=FALSE}
-
+```{r day_type,warning = FALSE, message=FALSE}
 # Create a vector of weekdays and weekends
 day_type_vector <- c(
   Monday = "Weekday", Tuesday = "Weekday", Wednesday = "Weekday", Thursday = "Weekday", Friday = "Weekday",
   Saturday = "Weekend", Sunday = "Weekend"
 )
+```
 
+Now that we have created a new vector, we need to identify the type of day, and then process the data to add a new column for 'day_type'.
+
+```{r processing,warning = FALSE, message=FALSE}
 # Function to identify the day type
 type <- function(day_of_week) 
 {
   return(ifelse(day_of_week %in% names(day_type_vector), day_type_vector[day_of_week], "NA"))
 }
 
-
 # Process the data and add a new column for day_type
 accidents$day_type <- sapply(accidents$day_of_week, type)
+
+```
+
+Visualization of the processed data with the required alpha to create a translucent plot. Facet wrap is used to split into two plots (2 row,1 col)
+
+```{r plot,warning = FALSE, message=FALSE}
 
 # Create a ggplot visualization
 ggplot(data = accidents, aes(x = time, fill = severity)) +
@@ -66,14 +77,43 @@ ggplot(data = accidents, aes(x = time, fill = severity)) +
     title    = "Number of accidents throughout the day",
     subtitle = "By day of week and severity",
   )
-
 ```
+
+**Observation**- The accident count is more concentrated from 12PM to 10PM (particularly data peaks at 4:00PM during weekdays and weekends). Slight accidents are more than serious or fatal accidents. There are no fatal accidents during the weekend.
 
 ## 2 - NYC marathon winners
 
-```{r label-me-2}
+#The New York City Marathon is an annual marathon (26.2 miles / 42.195 kilometers) that courses through the five boroughs of New York City. Marathon times of runners in the Men and Women divisions of the New York City Marathon between 1970 and 2020 can be found in the nyc_marathon dataset in the openintro package
+
+#a. Create a histogram and a box plot of the distribution of marathon times of all runners in the dataset. What features of the distribution are apparent in the histogram and not the box plot? What features are apparent in the box plot but not in the histogram?
+
+```{r NYC,warning = FALSE, message=FALSE}
+library(openintro)
+library(ggplot2)
+
+glimpse(nyc_marathon)
+
+#Plotting histogram for all runners
+ggplot(nyc_marathon, aes(x = time)) +
+  geom_histogram() +
+  labs(title = "Histogram of NYC Marathon Times for all runners", 
+       x = "Time (mins)", 
+       y = "Number of Runners"
+       )+
+theme_minimal()
+
+#Plotting boxplot for all runners
+ggplot(nyc_marathon, aes(x = time)) +
+geom_boxplot() +
+  labs(title = "Histogram of NYC Marathon Times", 
+       x = "Time in minutes", 
+       y = "Number of Runners"
+  )+
+  theme_minimal()
 
 ```
+
+Observation: The boxplot contains outliers that are positioned farther away from the center of the graph.
 
 ## 3 - US counties
 
