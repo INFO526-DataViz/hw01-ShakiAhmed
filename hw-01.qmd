@@ -6,42 +6,66 @@ date: 2023-09-08 (YYYY-MM-DD)
 toc: true
 ---
 
-## 0- Setup
+##Setup
+```{r include=FALSE, warning = FALSE, message=FALSE}
+# Install & load packages
+#Accidents dataset is within dsbox package
 
-Initialization of packages, and downloading additional packages needed for this homework assignment.
-
-Theme set has also been set to the perfect standard (as discussed in lectures).
-
-```{r include=FALSE}
-#Installing required packages for the homework
 install.packages("pacman")
-install.packages("tidyverse")
-install.packages("dplyr")
-install.packages("ggplot2")
 pacman::p_load("tidyverse")
-pacman::p_load_gh("rstudio-education/dsbox") #Trying to install this as autograder in Github is unable to install dsbox
+pacman::p_load_gh("rstudio-education/dsbox")
 
 
-# set theme for ggplot2
+theme_set(theme_minimal(base_size = 11))
+
+### setting theme for ggplot2
 ggplot2::theme_set(ggplot2::theme_minimal(base_size = 14))
 
-# set width of code output
+# setting width of code output
 options(width = 65)
 
-# set figure parameters for knitr
+# setting figure parameters for knitr
 knitr::opts_chunk$set(
   fig.width = 7,        # 7" width
   fig.asp = 0.618,      # the golden ratio
-  fig.retina = 3,       # dpi multiplier for displaying HTML output on retina
+  fig.retina = 4,       # dpi multiplier for displaying HTML output on retina
   fig.align = "center", # center align figures
-  dpi = 300             # higher dpi, sharper image
+  dpi = 500             # higher dpi, sharper image
 )
 
 ```
 
 ## 1 - Road traffic accidents in Edinburgh
 
-```{r label-me-1}
+
+```{r warning = FALSE, message=FALSE}
+
+# Create a vector of weekdays and weekends
+day_type_vector <- c(
+  Monday = "Weekday", Tuesday = "Weekday", Wednesday = "Weekday", Thursday = "Weekday", Friday = "Weekday",
+  Saturday = "Weekend", Sunday = "Weekend"
+)
+
+# Function to identify the day type
+type <- function(day_of_week) 
+{
+  return(ifelse(day_of_week %in% names(day_type_vector), day_type_vector[day_of_week], "NA"))
+}
+
+
+# Process the data and add a new column for day_type
+accidents$day_type <- sapply(accidents$day_of_week, type)
+
+# Create a ggplot visualization
+ggplot(data = accidents, aes(x = time, fill = severity)) +
+  geom_density(alpha = 0.3) +
+  facet_wrap(~ day_type, ncol = 1) +
+  labs(
+    x        = "Time of the day",
+    y        = "Density",
+    title    = "Number of accidents throughout the day",
+    subtitle = "By day of week and severity",
+  )
 
 ```
 
@@ -54,311 +78,5 @@ knitr::opts_chunk$set(
 ## 3 - US counties
 
 ## 4 - Rental apartments in SF
-
-**Introduction:**
-
-This code snippet retrieves rental data from a GitHub repository using R's "**read.csv()**" function. The dataset, part of the TidyTuesday project, will be the foundation for data analysis and visualization task, enabling insights into rental prices and patterns for the city of San Francisco.
-
-```{r warning = FALSE, message=FALSE}
-
-# Read the data from the URL in Github
-rent <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv")
-```
-
-**Question 1:**
-
-1.  To create a visualization that will help compare the distribution of rental prices (`price`) per bedroom (`beds`) across neighborhoods (`nhood`) in the city of San Francisco (`city == "san francisco"`), over time. Limit your analysis to rentals where the full unit is available, i.e. (`room_in_apt   == 0`). You have the flexibility to choose which years and which neighborhoods.
-
-This code snippet extends the rental dataset by creating a new column- '**price_per_bedroom**', calculated as the ratio of '**price**' to the number of bedrooms- '**beds**'. (new table name- '**mutate_data**'
-
-```{r warning = FALSE, message=FALSE}
-# Create a new column for price per bedroom (Using mutate function)
-mutate_data <- rent %>%
-  mutate(price_per_bedroom = price / beds)  #Assigning value of new column to a division of price/beds
-```
-
-In continuation, the mutated data is now filtered down for the following parameters:
-
-1.  City= **San Francsisco** (Excluded South San Francisco, as question clearly mentioned only San Francisco)
-2.  Full unit is available (i.e. **room_in_apt==0**)
-3.  Six neighbourhoods- **Bayview, Parkside, CCSF, Russian Hill, Sea Cliff** and **Twin peaks**
-4.  Year - From **2010-2018** (for first four neighborhoods), and **2011-2017** for last two.
-
-```{r warning = FALSE, message=FALSE}
-# Filter the data for Bayview neighborhood and years 2010-2018
-filtered_data_bayview <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood == "bayview", year >= 2010, year <= 2018)
-
-# Filter the data for Parkside neighborhood and years 2010-2018
-filtered_data_parkside <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood == "parkside", year >= 2010, year <= 2018)
-
-# Filter the data for CCSF neighborhood and years 2010-2018
-filtered_data_ccsf <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood == "CCSF", year >= 2010, year <= 2018)
-
-# Filter the data for Russian Hill neighborhood and years 2010-2018
-filtered_data_russianhill <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood == "russian hill", year >= 2010, year <= 2018)
-
-# Filter the data for Sea cliff neighborhood and years 2011-2017
-filtered_data_seacliff <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood=="sea cliff", year >= 2011, year <= 2017)
-
-# Filter the data for Twin Peaks neighborhood and years 2011-2017
-filtered_data_twinpeaks <- mutate_data |>
-  filter(city == "san francisco", room_in_apt == 0, nhood=="twin peaks", year >= 2011, year <= 2017)
-
-```
-
-For ease of viewing the trends, i have calculated the median price for each of the area using the **summarize()** function. This provides an additional layer for vieweing and analyzing the median trends for neighborhoods across time. The '**na.rm=TRUE**' parameter is to deal with missing values in the '**price_per_bedroom**', as all the 'price' are there in the filtered data, but some values are **'0' or 'NA'** in the 'beds' column, hence leading to a null value in the '**price_per_beds**' column.
-
-```{r warning = FALSE, message=FALSE}
-# Group data by year and calculate the median price per bedroom for each year (To highlight median price as a second layer)
-
-summary_stats_bayview <- filtered_data_bayview |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_bayview = median(price_per_bedroom, na.rm = TRUE))
-
-summary_stats_parkside <- filtered_data_parkside |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_parkside = median(price_per_bedroom, na.rm = TRUE))
-
-summary_stats_ccsf <- filtered_data_ccsf |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_ccsf = median(price_per_bedroom, na.rm = TRUE))
-
-summary_stats_russianhill <- filtered_data_russianhill |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_russianhill = median(price_per_bedroom, na.rm = TRUE))
-
-summary_stats_seacliff <- filtered_data_seacliff |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_seacliff = median(price_per_bedroom, na.rm = TRUE))
-
-summary_stats_twinpeaks <- filtered_data_twinpeaks |>
-  group_by(year) |>    #Grouping by year
-  summarize(median_price_twinpeaks = median(price_per_bedroom, na.rm = TRUE))
-
-```
-
-**Plotting of the graphs:**
-
-This code generates a scatterplot in R using ggplot2 to visualize rental price trends in San Francisco's city. It plots data points for rental prices per bedroom and overlays median values (as a dot plot and a line plot) over the years.
-
-I have chosen this format since it is a good way of representation of the change in rent per year, and for each year there are multiple observations, and the median price can be clearly plotted to show the fluctuating trends.
-
-The plot is also customized with titles, captions, and legends, providing a clear representation of rental price variations over time.
-
-1.  **Bayview neighborhood:**
-
-```{r warning = FALSE, message=FALSE}
-# Creating a scatterplot with datapoints and median to highlight median prices per year
-ggplot() +
-  #Scatter plot to plot the filtered data for Bayview
-  geom_point(data = filtered_data_bayview, 
-             aes(x = year, y = price_per_bedroom, color = "Price per Bedroom"), 
-             size = 1) +    
-  #Scatter plot to show the median cost per bedroom
-  geom_point(data = summary_stats_bayview, 
-             aes(x = year, y = median_price_bayview, color = "Median Price"), 
-             size = 2) +
-  #Line plot to show the trends of median
-  geom_line(data = summary_stats_bayview, 
-            aes(x = year, y = median_price_bayview, color = "Median Price"), 
-            size = 0.5) +
-  #Labels, titles and captions
-  labs(
-    title = "Rental price per bedroom in San Francisco",
-    subtitle = "Bayview Neighbourhood",
-    x = "Year",
-    y = "Price per Bedroom\n(In USD)",
-    caption = "Source: Jon Harmon (2022) | TidyTuesday"
-  ) +
-  
-  #Setting up of theme, centering of Titles and subtitle, and inserting of legends
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
-  scale_x_continuous(breaks = unique(filtered_data_bayview$year)) +
-  scale_color_manual(values = c("Price per Bedroom" = "lightblue2", "Median Price" = "orange"))
-```
-
-**Observations:** Overall trend for the median price per bedroom in the Bayview neighborhood is steadily increasing (positive trend). There are minor adjustments/corrections in the median price during the years - 2014, 2016 and 2018. The peak median price is during the year 2015.
-
-2.  **Parkside neighborhood:**
-
-```{r warning = FALSE, message=FALSE}
-# Creating a scatterplot with datapoints and median to highlight median prices per year
-ggplot() +
-  #Scatter plot to plot the filtered data for Park Side
-  geom_point(data = filtered_data_parkside, 
-             aes(x = year, y = price_per_bedroom, color = "Price per Bedroom"), 
-             size = 1) +    
-  #Scatter plot to show the median cost per bedroom
-  geom_point(data = summary_stats_parkside, 
-             aes(x = year, y = median_price_parkside, color = "Median Price"), 
-             size = 2) +
-  #Line plot to show the trends of median
-  geom_line(data = summary_stats_parkside, 
-            aes(x = year, y = median_price_parkside, color = "Median Price"), 
-            size = 0.5) +
-  #Labels, titles and captions
-  labs(
-    title = "Rental price per bedroom in San Francisco",
-    subtitle = "Parkside Neighbourhood",
-    x = "Year",
-    y = "Price per Bedroom\n(In USD)",
-    caption = "Source: Jon Harmon (2022) | TidyTuesday"
-  ) +
-  
-  #Setting up of theme, centering of Titles and subtitle, and inserting of legends
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
-  scale_x_continuous(breaks = unique(filtered_data_parkside$year)) +
-  scale_color_manual(values = c("Price per Bedroom" = "lightblue2", "Median Price" = "orange"))
-
-```
-
-**Observations:** Overall trend for the median price per bedroom in the Parkside neighborhood is steadily increasing (positive trend). There is only one year - 2016, where median price has gone down from the preceding year. The peak median price is during the year 2018.
-
-3.  **Comparison of CCSF vs Russian Hills neighborhood**
-
-    ```{r warning = FALSE, message=FALSE}
-    # Creating a scatterplot with datapoints and median to highlight median prices per year
-    ggplot() +
-      #Scatter plot to plot the filtered data for CCSF
-      geom_point(data = filtered_data_ccsf, 
-                 aes(x = year, y = price_per_bedroom, 
-                     color = "CCSF: Price per Bedroom"), 
-                 size = 1) +
-      #Scatter plot to show the median cost per bedroom
-      geom_point(data = summary_stats_ccsf, 
-                 aes(x = year, y = median_price_ccsf, color = "CCSF: Median Price"), 
-                 size = 1.5) +
-      #Line plot to show the trends of median
-      geom_line(data = summary_stats_ccsf, 
-                aes(x = year, y = median_price_ccsf, color = "CCSF: Median Price"), 
-                size = 0.5) +
-      
-      #Scatter plot to plot the filtered data for Russian Hills layered over CCSF
-      geom_point(data = filtered_data_russianhill, 
-                 aes(x = year, y = price_per_bedroom, 
-                     color = "Russian Hill: Price per Bedroom"), 
-                 size = 1) +
-      #Scatter plot to show the median cost per bedroom
-      geom_point(data = summary_stats_russianhill, 
-                 aes(x = year, y = median_price_russianhill, 
-                     color = "Russian Hill: Median Price"), 
-                 size = 2) +
-       #Line plot to show the trends of median
-      geom_line(data = summary_stats_russianhill, 
-                aes(x = year, y = median_price_russianhill, 
-                    color = "Russian Hill: Median Price"), 
-                size = 0.5) +
-      
-      # Labels, titles, and captions
-      labs(
-        title = "Rental price per bedroom in San Francisco",
-        subtitle = "CCSF vs. Russian Hill Neighborhoods",
-        x = "Year",
-        y = "Price per Bedroom\n(In USD)",
-        caption = "Source: Jon Harmon (2022) | TidyTuesday"
-      ) +
-      
-      # Setting up of theme, centering of Titles and subtitle, and inserting of legends
-      theme_minimal() +
-      theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +
-      scale_x_continuous(breaks = unique(filtered_data_russianhill$year)) +
-      scale_color_manual(
-        values = c(
-          "CCSF: Price per Bedroom" = "red2",
-          "Russian Hill: Price per Bedroom" = "skyblue2",
-          "CCSF: Median Price" = "orange",
-          "Russian Hill: Median Price" = "yellow3"
-        ),
-        labels = c(
-          "CCSF: Price per Bedroom" = "CCSF Price per Bedroom",
-          "CCSF: Median Price" = "CCSF Median Price",
-          "Russian Hill: Price per Bedroom" = "Russian Hill Price per Bedroom",
-          "Russian Hill: Median Price" = "Russian Hill Median Price"
-        )
-      ) 
-
-    ```
-
-    **Observations:**
-
-    a\) Overall trend for the median price per bedroom in the CCSF neighborhood is steadily increasing (positive trend), except for the year 2017, where there was a sharp increase in median price per bedroom, followed by a correction back to previous year level in 2018. The peak median price is during the year 2017.
-
-    b\) Overall trend for the median price per bedroom in the Russian Hill neighborhood is slightly increasing from 2010-2018, but overall stagnant.The peak median price appears to be during the year 2010 (but should be ignored as sufficient data is not available for comparison). The true peak median price is during the year 2015.
-
-4.  **Comparison of Sea Cliff vs Twin Peaks neighborhood**
-
-```{r warning = FALSE, message=FALSE}
-
-# Creating a scatterplot with datapoints and median to highlight median prices per year
-ggplot() +
-  #Scatter plot to plot the filtered data for Sea Cliff
-  geom_point(data = filtered_data_seacliff, 
-             aes(x = year, y = price_per_bedroom, 
-                 color = "Sea Cliff: Price per Bedroom"), 
-             size = 1.5) +
-  #Scatter plot to show the median cost per bedroom
-  geom_point(data = summary_stats_seacliff, 
-             aes(x = year, y = median_price_seacliff, 
-                 color = "Sea Cliff: Median Price"), 
-             size = 2) +
-  #Line plot to show the trends of median
-  geom_line(data = summary_stats_seacliff, 
-            aes(x = year, y = median_price_seacliff, 
-                color = "Sea Cliff: Median Price"), 
-            size = 0.5) +
-  
-  #Scatter plot to plot the filtered data for Twin Peaks layered over Sea Cliff
-  geom_point(data = filtered_data_twinpeaks, 
-             aes(x = year, y = price_per_bedroom, 
-                 color = "Twin Peaks: Price per Bedroom"), 
-             size = 1) +
-  #Scatter plot to show the median cost per bedroom
-  geom_point(data = summary_stats_twinpeaks, 
-             aes(x = year, y = median_price_twinpeaks, 
-                 color = "Twin Peaks: Median Price"), 
-             size = 2) +
-  #Line plot to show the trends of median
-  geom_line(data = summary_stats_twinpeaks, 
-            aes(x = year, y = median_price_twinpeaks, 
-                color = "Twin Peaks: Median Price"), 
-            size = 0.5) +
- 
-   # Labels, titles, and captions
-  labs(
-    title = "Rental price per bedroom in San Francisco",
-    subtitle = "Sea Cliff vs. Twin Peaks Neighborhoods",
-    x = "Year",
-    y = "Price per Bedroom\n(In USD)",
-    caption = "Source: Jon Harmon (2022) | TidyTuesday"
-  ) +
-  # Setting up of theme, centering of Titles and subtitle, and inserting of legends
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5)) +  
-  scale_x_continuous(breaks = unique(filtered_data_seacliff$year)) +
-  scale_color_manual(
-    values = c(
-      "Sea Cliff: Price per Bedroom" = "skyblue2",
-      "Twin Peaks: Price per Bedroom" = "pink",
-      "Sea Cliff: Median Price" = "orange",
-      "Twin Peaks: Median Price" = "yellow3"
-    ),
-    labels = c(
-      "Sea Cliff: Price per Bedroom" = "Sea Cliff Price per Bedroom",
-      "Sea Cliff: Median Price" = "Sea Cliff Median Price",
-      "Twin Peaks: Price per Bedroom" = "Twin Peaks Price per Bedroom",
-      "Twin Peaks: Median Price" = "Twin Peaks Median Price"
-    )
-  )
-
-```
-
-**Observations**: The overall trend for both the neighborhoods- Twin peaks and Sea Cliff are trending upwards. Both median price start off at around the same price (in 2011), and are comparably the same (Twin peak slightly more than Sea Cliff) towards the year 2017. The rise in prices of Twin peaks is significantly more in the middle, with Twin peak neighborhood's price peaking during the year 2015, whereas the rise of price in Sea Cliff is more gradual, and peaks during the year 2017.
 
 ## 5 - Napoleon's march.
