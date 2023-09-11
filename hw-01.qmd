@@ -19,6 +19,7 @@ install.packages("tidyverse")
 install.packages("dplyr")
 install.packages("ggplot2")
 pacman::p_load("tidyverse")
+pacman::p_load_gh("rstudio-education/dsbox") #Trying to install this as autograder in Github is unable to install dsbox
 
 
 # set theme for ggplot2
@@ -291,7 +292,7 @@ ggplot() +
 
     b\) Overall trend for the median price per bedroom in the Russian Hill neighborhood is slightly increasing from 2010-2018, but overall stagnant.The peak median price appears to be during the year 2010 (but should be ignored as sufficient data is not available for comparison). The true peak median price is during the year 2015.
 
-4.   **Comparison of Sea Cliff vs Twin Peaks neighborhood**
+4.  **Comparison of Sea Cliff vs Twin Peaks neighborhood**
 
 ```{r warning = FALSE, message=FALSE}
 
