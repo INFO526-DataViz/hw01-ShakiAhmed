@@ -176,12 +176,71 @@ ggplot(county %>% filter(!is.na(median_edu))) +
 
 ```
 
-Answer- The second plot of the data makes more sense as it shows the spread more distinctly (values) across the home ownership vs educational qualifications.
+Answer- The first plot of the data makes more sense as it shows the spread more distinctly (values) across the home ownership vs educational qualifications.
 
 c\. Recreate the R code necessary to generate the following graphs. Note that wherever a categorical variable is used in the plot, it\'s `metro`.
 
-```{r}
+```{r plots_A_B, warning = FALSE, message=FALSE}
 
+ggplot(data = county, aes(x = homeownership, y = poverty)) +
+  geom_point() +
+  labs(title = "Plot A",
+       x = "homeownership",
+       y = "poverty")
+
+ggplot(data = county, aes(x = homeownership, y = poverty)) +
+  geom_point() +
+  geom_smooth(se = FALSE)+
+  labs(title = "Plot B",
+       x = "homeownership",
+       y = "poverty")
+
+```
+
+```{r plots_C_D, warning = FALSE, message=FALSE}
+
+# Plot 1: Scatter plot with smoothing line (color set to green)
+ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+  geom_point() +  
+  geom_smooth(se = FALSE, aes(color = "green")) +  # Set color as a constant ("green")
+  labs(
+    x = "Homeownership",
+    y = "Poverty",
+    title = "Scatter Plot with Smoothing Line for Metro"
+  )
+
+# Plot 2: Scatter plot (Plot B)
+ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+  geom_smooth(se = FALSE) + 
+  geom_point() +  # Add points on top of the smoothed line
+  labs(
+    x = "Homeownership",
+    y = "Poverty",
+    title = "Scatter Plot with Smoothing Line for Metro"
+  )
+```
+
+```{r plots_E_F, warning = FALSE, message=FALSE}
+
+ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+  geom_point(aes(color = metro)) +
+  geom_smooth(aes(linetype = metro),se = FALSE) + 
+  labs(
+    x = "Homeownership",
+    y = "Poverty",
+    title = "Scatter Plot with Smoothing Line for Metro"
+  ) +
+  scale_linetype_manual(values = c("yes" = 21, "no" = "solid")) 
+
+
+ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+  geom_smooth(aes(color = metro),se = FALSE) +
+  geom_point(aes(color = metro)) +
+  labs(
+    x = "Homeownership",
+    y = "Poverty",
+    title = "Scatter Plot with Smoothing Line for Metro"
+  )
 ```
 
 ## 4 - Rental apartments in SF
