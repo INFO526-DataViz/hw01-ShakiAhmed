@@ -1,7 +1,10 @@
 ---
 title: "HW 01"
 author: "Shakir Ahmed"
-format: html
+format: 
+  html:
+    embed-resources: true
+
 toc: true
 ---
 
