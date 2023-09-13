@@ -140,13 +140,15 @@ c\. Creating a plot to avoid the redundancy from the above plot:-
 ```{r 2_redo_men_women,warning = FALSE, message=FALSE}
 
   ggplot(data=nyc_marathon, aes(x = time, y = division, fill = division)) +
-  geom_boxplot() +
+  geom_boxplot(show.legend = FALSE) +
   scale_fill_manual(values = c("deepskyblue2", "orange")) +
   labs(x = "year",
        y = "time(min)",
        title = "Marathon times over the years by gender") + 
   theme_bw()
 ```
+
+**Rationale**: The legend parameter is redundant as the Y Axis clearly labels the runners are Men and Women. A legend is not needed to differentiate between runners. This was the redundancy in the previous graph.
 
 d\. Visualize the marathon times of men and women over the years. As is usual with time series plot, year should go on the x-axis. Use different colors and shapes to represent the times for men and women. Make sure your colors match those in the previous part. Once you have your plot, describe what is visible in this plot but not in the others.
 
