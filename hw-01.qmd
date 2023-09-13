@@ -41,7 +41,7 @@ knitr::opts_chunk$set(
 
 Below code chunk is to create a new day type vector to assign each day as weekday or weekend.
 
-```{r day_type,warning = FALSE, message=FALSE}
+```{r 1_day_type,warning = FALSE, message=FALSE}
 # Create a vector of weekdays and weekends
 day_type_vector <- c(
   Monday = "Weekday", Tuesday = "Weekday", Wednesday = "Weekday", Thursday = "Weekday", Friday = "Weekday",
@@ -51,7 +51,7 @@ day_type_vector <- c(
 
 Now that we have created a new vector, we need to identify the type of day, and then process the data to add a new column for **'day_type'**.
 
-```{r processing,warning = FALSE, message=FALSE}
+```{r 1_processing,warning = FALSE, message=FALSE}
 # Function to identify the day type
 type <- function(day_of_week) 
 {
@@ -65,7 +65,7 @@ accidents$day_type <- sapply(accidents$day_of_week, type)
 
 Visualization of the processed data with the required alpha to create a translucent plot. Facet wrap is used to split into two plots (2 row,1 col)
 
-```{r plot,warning = FALSE, message=FALSE}
+```{r 1_plot,warning = FALSE, message=FALSE}
 
 # Create a ggplot visualization with density of 0.3
 ggplot(data = accidents, aes(x = time, fill = severity)) +
@@ -83,11 +83,11 @@ ggplot(data = accidents, aes(x = time, fill = severity)) +
 
 ## 2 - NYC marathon winners
 
-The New York City Marathon is an annual marathon (26.2 miles / 42.195 kilometers) that courses through the five boroughs of New York City. Marathon times of runners in the Men and Women divisions of the New York City Marathon between 1970 and 2020 can be found in the nyc_marathon dataset in the openintro package
+The New York City Marathon is an annual marathon (26.2 miles / 42.195 kilometers) that courses through the five boroughs of New York City. Marathon times of runners in the Men and Women divisions of the New York City Marathon between 1970 and 2020 can be found in the nyc_marathon dataset in the openintro package.
 
 a\. Create a histogram and a box plot of the distribution of marathon times of all runners in the dataset. What features of the distribution are apparent in the histogram and not the box plot? What features are apparent in the box plot but not in the histogram?
 
-```{r all_runners,warning = FALSE, message=FALSE}
+```{r 2_all_runners,warning = FALSE, message=FALSE}
 
 library(openintro)
 library(ggplot2)
@@ -116,7 +116,7 @@ geom_boxplot() +
 
 b\. Create a side-by-side box plots of marathon times for men and women. Use different colors for the each of the box plots -- do not use the default colors, but instead manually define them (you can choose any two colors you want). Based on the plots you made, compare the distribution of marathon times for men and women.
 
-```{r men_n_women,warning = FALSE, message=FALSE}
+```{r 2_men_n_women,warning = FALSE, message=FALSE}
 
 # Create a boxplot with different colors for male and female
 ggplot(data = nyc_marathon, aes(x = time, y = division, color = division)) +
@@ -132,9 +132,14 @@ ggplot(data = nyc_marathon, aes(x = time, y = division, color = division)) +
 
 **Observation**- The finishing time is faster for male than female with median vaues also showing the same.
 
+```{r 2_redo_men_women,warning = FALSE, message=FALSE}
+
+
+```
+
 d\. Visualize the marathon times of men and women over the years. As is usual with time series plot, year should go on the x-axis. Use different colors and shapes to represent the times for men and women. Make sure your colors match those in the previous part. Once you have your plot, describe what is visible in this plot but not in the others.
 
-```{r nyc_time_series,warning = FALSE, message=FALSE}
+```{r 2_nyc_time_series,warning = FALSE, message=FALSE}
 
 #Time series plot to show how the running time has changed between men and women
 ggplot(data = nyc_marathon, aes(x = year, y = time, color = division)) +
@@ -157,7 +162,7 @@ ggplot(data = nyc_marathon, aes(x = year, y = time, color = division)) +
 
 a\. What does the following code do? Does it work? Does it make sense? Why/why not?
 
-```{r question1,warning = FALSE, message=FALSE}
+```{r 3_q1,warning = FALSE, message=FALSE}
 #Plot is an example of how a dotplot will not be helpful in representation
 ggplot(county) +
   geom_point(aes(x = median_edu, y = median_hh_income)) +
@@ -168,7 +173,7 @@ ggplot(county) +
 
 b\. Which of the following two plots makes it easier to compare poverty levels (poverty) across people from different median education levels (median_edu)? What does this say about when to place a faceting variable across rows or columns?
 
-```{r question2,warning = FALSE, message=FALSE}
+```{r 3_q2,warning = FALSE, message=FALSE}
 #Plot 1 showing the spread of data is across the X axis
 ggplot(county %>% filter(!is.na(median_edu))) + 
   geom_point(aes(x = homeownership, y = poverty)) + 
@@ -185,7 +190,7 @@ ggplot(county %>% filter(!is.na(median_edu))) +
 
 c\. Recreate the R code necessary to generate the following graphs. Note that wherever a categorical variable is used in the plot, it's `metro`.
 
-```{r plots_A_B, warning = FALSE, message=FALSE}
+```{r 3_plots_A_B, warning = FALSE, message=FALSE}
 
 # Scatter plot shows the full data set
 ggplot(data = county, aes(x = homeownership, y = poverty)) +
@@ -204,7 +209,7 @@ ggplot(data = county, aes(x = homeownership, y = poverty)) +
 
 ```
 
-```{r plots_C_D, warning = FALSE, message=FALSE}
+```{r 3_plots_C_D, warning = FALSE, message=FALSE}
 
 # Scatter plot with smoothing line for metro categorical variable (color set to green) layered over the scatter plot
 ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
@@ -227,7 +232,7 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   )
 ```
 
-```{r plots_E_F, warning = FALSE, message=FALSE}
+```{r 3_plots_E_F, warning = FALSE, message=FALSE}
 
 #Scatter plot shows the segregation of data points based on metro variable, and smoothing line set to different linetypes, with legends
 ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
@@ -251,7 +256,7 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   )
 ```
 
-```{r plots_G_H, warning = FALSE, message=FALSE}
+```{r 3_plots_G_H, warning = FALSE, message=FALSE}
 
 #Scatter plot shows the segregation of data points based on metro variable, and smoothing line set for the whole data without segregation
 ggplot(data = county, aes(x = homeownership, y = poverty)) +
@@ -279,13 +284,13 @@ The data for this exercise comes from TidyTuesday and it's on rental prices in S
 
 This code snippet retrieves rental data from a GitHub repository using R's "read.csv()" function. The dataset, part of the TidyTuesday project, will be the foundation for data analysis and visualization task, enabling insights into rental prices and patterns for the city of San Francisco.
 
-```{r warning = FALSE, message=FALSE}
+```{r 4_read,warning = FALSE, message=FALSE}
 
 # Read the data from the URL in Github
 rent <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-05/rent.csv")
 ```
 
-```{r warning = FALSE, message=FALSE}
+```{r 4_process,warning = FALSE, message=FALSE}
 # Create a new column for price per bedroom (Using mutate function)
 mutate_data <- rent %>%
   mutate(price_per_bedroom = price / beds)  # Assigning value of new column to a division of price/beds
@@ -303,7 +308,7 @@ filtered_data <- filtered_data %>%
 
 Now, we have the required filtered data. We can proceed with plotting the graph. I am choosing a heatmap plot to show the data, as the goal is to display the varying of rent per bedroom as time passes, and the heatmap can accomplish this goal by showing color gradients for each neighborhood.
 
-```{r warning = FALSE, message=FALSE}
+```{r 4_plot,warning = FALSE, message=FALSE}
 
 #Heatmap for prices for 6 different neighborhoods from year 2010-2018
 ggplot(data = filtered_data, aes(x = year, y = nhood, fill = price_per_bedroom)) +
@@ -333,7 +338,7 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
 
     Importing/reading the code using the rds() function after setting file path to 'data' folder
 
-    ```{r warning = FALSE, message=FALSE}
+    ```{r 5_read,warning = FALSE, message=FALSE}
 
     #Setting directory to data folder, where napoleon.rds data exists
     setwd("/cloud/project/data")
@@ -342,15 +347,17 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
 
     Now
 
-    ```{r warning = FALSE, message=FALSE}
+    ```{r 5_process_plot,warning = FALSE, message=FALSE}
 
     library(ggplot2)
-    library(scales)        # additional formatting for scales
-    library(grid)          # combining plots
-    library(gridExtra)     # combining plots
-    library(dplyr)         # tidy data manipulations
+    library(scales)     # additional formatting for scales
+    library(grid)       # combining plots
+    library(gridExtra)  # combining plots
+    library(dplyr)      # tidy data manipulations
     install.packages("HistData")
-    #Code is to read the data from the HistData package
+
+
+
     #Troop data
     data(Minard.troops, package="HistData")
     str(Minard.troops)
