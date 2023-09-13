@@ -109,7 +109,8 @@ ggplot(nyc_marathon, aes(x = time)) +
 geom_boxplot() +
   labs(title = "Histogram of NYC Marathon Times", 
        x = "Time (mins)", 
-       y = "Number of Runners"
+       y = "Number of Runners",
+       caption= "NYC Marathon dataset in OpenIntro package"
   )+
   theme_minimal()
 
@@ -128,7 +129,8 @@ ggplot(data = nyc_marathon, aes(x = time, y = division, fill = division)) +
   labs(
     title = "Marathon Times by Division",
     x = "Marathon Time (hours)",
-    y = "Division"
+    y = "Division",
+    caption= "NYC Marathon dataset in OpenIntro package"
   ) +
   theme_minimal()
 ```
@@ -144,6 +146,7 @@ c\. Creating a plot to avoid the redundancy from the above plot:-
   scale_fill_manual(values = c("deepskyblue2", "orange")) +
   labs(x = "year",
        y = "time(min)",
+       caption= "NYC Marathon dataset in OpenIntro package",
        title = "Marathon times over the years by gender") + 
   theme_bw()
 ```
@@ -164,12 +167,13 @@ ggplot(data = nyc_marathon, aes(x = year, y = time, color = division)) +
     title = "Marathon Times Over the Years",
     x = "Year",
     y = "Marathon Time\n(in hours)",
-    color = "Division"
+    color = "Division",
+    caption= "NYC Marathon dataset in OpenIntro package"
   ) +
   theme_minimal()
 ```
 
-**Observation-** The average finishing time for men and women are reducing over the years
+**Observation-** The average finishing time for men and women are reducing over the years. It is possible to visualize and segregate each point and determine the trends over each year. The trends are more apparent than a boxplot.
 
 ## 3 - US counties
 
@@ -319,9 +323,27 @@ filtered_data <- filtered_data %>%
 
 ```
 
+Now, we have the required filtered data. We can proceed with plotting the graph. Per discussion with Greg, plotting a histogram below to show the price distribution of the price per bedroom parameter. Also plotted below is a heat map of the price distribution over time.
+
+```{r 4_plot_hist,warning = FALSE, message=FALSE}
+
+#Plotting the histograms side by side
+ggplot(data= filtered_data , aes(x = price_per_bedroom)) +
+  geom_histogram(binwidth = 122,
+                 fill= "deepskyblue2", color = "black") +
+  facet_wrap(~nhood, scales = "free") +
+  labs(x = "Price per Bedroom\n(In USD)",
+       y = "Frequency",
+       title = "Price per Bedroom Histogram by Neighborhood",
+       caption= "Jon Harmon (2022) | TidyTuesday"
+       ) +
+  theme_minimal()
+
+```
+
 Now, we have the required filtered data. We can proceed with plotting the graph. I am choosing a heatmap plot to show the data, as the goal is to display the varying of rent per bedroom as time passes, and the heatmap can accomplish this goal by showing color gradients for each neighborhood.
 
-```{r 4_plot,warning = FALSE, message=FALSE}
+```{r 4_plot_heat,warning = FALSE, message=FALSE}
 
 #Heatmap for prices for 6 different neighborhoods from year 2010-2018
 ggplot(data = filtered_data, aes(x = year, y = nhood, fill = price_per_bedroom)) +
