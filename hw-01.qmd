@@ -122,9 +122,9 @@ b\. Create a side-by-side box plots of marathon times for men and women. Use dif
 ```{r 2_men_n_women,warning = FALSE, message=FALSE}
 
 # Create a boxplot with different colors for male and female
-ggplot(data = nyc_marathon, aes(x = time, y = division, color = division)) +
+ggplot(data = nyc_marathon, aes(x = time, y = division, fill = division)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("Division A" = "deepskyblue", "Division B" = "orange")) +                          #Manual color scaling function to custom set colors
+  scale_fill_manual(values = c("deepskyblue", "orange")) +                          #Manual color scaling function to custom set colors
   labs(
     title = "Marathon Times by Division",
     x = "Marathon Time (hours)",
@@ -135,9 +135,17 @@ ggplot(data = nyc_marathon, aes(x = time, y = division, color = division)) +
 
 **Observation**- The finishing time is faster for male than female with median vaues also showing the same.
 
+c\. Creating a plot to avoid the redundancy from the above plot:-
+
 ```{r 2_redo_men_women,warning = FALSE, message=FALSE}
 
-
+  ggplot(data=nyc_marathon, aes(x = time, y = division, fill = division)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("deepskyblue2", "orange")) +
+  labs(x = "year",
+       y = "time(min)",
+       title = "Marathon times over the years by gender") + 
+  theme_bw()
 ```
 
 d\. Visualize the marathon times of men and women over the years. As is usual with time series plot, year should go on the x-axis. Use different colors and shapes to represent the times for men and women. Make sure your colors match those in the previous part. Once you have your plot, describe what is visible in this plot but not in the others.
