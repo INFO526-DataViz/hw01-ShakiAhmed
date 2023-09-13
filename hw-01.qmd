@@ -371,18 +371,6 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
 
 -   Finally, you should personalize the visualization with your own touch. You can do this in a myriad of ways, e.g., change colors, annotations, labels, etc. This change should be made to make the plot more like the original in some way. You need to explicitly call out what change you made and why you made it.
 
-    Importing/reading the code using the rds() function after setting file path to 'data' folder
-
-    ```{r 5_read,warning = FALSE, message=FALSE}
-    install.packages("here")
-    #Setting directory to data folder, where napoleon.rds data exists
-    #setwd("/cloud/project/data")
-    #readRDS(here("data", "napoleon.rds"))    
-    #If i chang working directory, github job is failing at his step. Hence using the data from HistData package
-
-    ```
-
-    Now
 
     ```{r 5_process_plot,warning = FALSE, message=FALSE}
 
