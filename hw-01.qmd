@@ -475,3 +475,6 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
     grid.arrange(plot_troops_cities_fixed, plot_temp_fixed, nrow=2, heights=c(3.5, 1.2))
     grid.rect(width = .99, height = .99, gp = gpar(lwd = 2, col = "gray", fill = NA))
     ```
+Citation: 
+1) http://euclid.psych.yorku.ca/www/psy6135/tutorials/Minard.html
+2) Minard meets ggplot2, Michael Friendly, January 22, 2018
