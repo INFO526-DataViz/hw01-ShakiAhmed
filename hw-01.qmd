@@ -124,13 +124,13 @@ b\. Create a side-by-side box plots of marathon times for men and women. Use dif
 
 # Create a boxplot with different colors for male and female
 ggplot(data = nyc_marathon, aes(x = time, y = division, fill = division)) +
-  geom_boxplot() +
+  geom_boxplot(show.legend = FALSE) +
   scale_fill_manual(values = c("deepskyblue", "orange")) +                          #Manual color scaling function to custom set colors
   labs(
     title = "Marathon Times by Division",
-    x = "Marathon Time (hours)",
+    x = "\nMarathon Time (hours)",
     y = "Division",
-    caption= "NYC Marathon dataset in OpenIntro package"
+    caption= "\nNYC Marathon dataset in OpenIntro package"
   ) +
   theme_minimal()
 ```
@@ -142,13 +142,15 @@ c\. Creating a plot to avoid the redundancy from the above plot:-
 ```{r 2_redo_men_women,warning = FALSE, message=FALSE}
 
   ggplot(data=nyc_marathon, aes(x = time, y = division, fill = division)) +
-  geom_boxplot(show.legend = FALSE) +
+  geom_boxplot() +
   scale_fill_manual(values = c("deepskyblue2", "orange")) +
-  labs(x = "year",
-       y = "time(min)",
-       caption= "NYC Marathon dataset in OpenIntro package",
+  labs(x = "\nTime (in hours)",
+       y = "Division",
+       caption= "\nNYC Marathon dataset in OpenIntro package",
        title = "Marathon times over the years by gender") + 
-  theme_bw()
+  theme_minimal()+
+  theme(axis.text.y = element_blank())  # Remove y-axis labels
+
 ```
 
 **Rationale**: The legend parameter is redundant as the Y Axis clearly labels the runners are Men and Women. A legend is not needed to differentiate between runners. This was the redundancy in the previous graph.
@@ -208,30 +210,36 @@ ggplot(county %>% filter(!is.na(median_edu))) +
 c\. Recreate the R code necessary to generate the following graphs. Note that wherever a categorical variable is used in the plot, it's `metro`.
 
 ```{r 3_plots_A_B, warning = FALSE, message=FALSE}
+library(gridExtra)
 
 # Scatter plot shows the full data set
-ggplot(data = county, aes(x = homeownership, y = poverty)) +
+plot_A <- ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point() +
   labs(title = "Plot A",
        x = "homeownership",
        y = "poverty")
 
 # Scatter plot shows the full data set and geom_smooth plot layered over
-ggplot(data = county, aes(x = homeownership, y = poverty)) +
+plot_B <- ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point() +
   geom_smooth(se = FALSE)+
   labs(title = "Plot B",
        x = "homeownership",
        y = "poverty")
 
+# Arrange the plots using grid.arrange
+grid.arrange(plot_A, plot_B, ncol = 2, 
+             widths = c(5,5), 
+             heights = c(10,10))
+
 ```
 
 ```{r 3_plots_C_D, warning = FALSE, message=FALSE}
 
 # Scatter plot with smoothing line for metro categorical variable (color set to green) layered over the scatter plot
-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+plot_C <-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   geom_point() +  
-  geom_smooth(se = FALSE, aes(color = "green")) +  # Set color as a constant ("green")
+  geom_smooth(se = FALSE, aes(color = "green"),show.legend = FALSE) +  # Set color as a constant ("green")
   labs(
     x = "homeownership",
     y = "poverty",
@@ -239,7 +247,7 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   )
 
 # Scatter plot with smoothing line for metro categorical variable (color set to green) layered under the scatter plot
-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+plot_D <-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   geom_smooth(se = FALSE) + 
   geom_point() +  # Add points on top of the smoothed line
   labs(
@@ -247,12 +255,17 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
     y = "poverty",
     title = "Plot D"
   )
+# Arrange the plots using grid.arrange
+grid.arrange(plot_C, plot_D, ncol = 2, 
+             widths = c(5,5), 
+             heights = c(10,10))
+
 ```
 
 ```{r 3_plots_E_F, warning = FALSE, message=FALSE}
 
 #Scatter plot shows the segregation of data points based on metro variable, and smoothing line set to different linetypes, with legends
-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+plot_E <- ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   geom_point(aes(color = metro)) +
   geom_smooth(aes(linetype = metro),se = FALSE) + 
   labs(
@@ -263,7 +276,7 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   scale_linetype_manual(values = c("yes" = 21, "no" = "solid")) 
 
 #Scatter plot shows the segregation of data points based on metro variable, and smoothing line matching the color of data set, layered under the data set, with legends
-ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
+plot_F <- ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
   geom_smooth(aes(color = metro),se = FALSE) +
   geom_point(aes(color = metro)) +
   labs(
@@ -271,12 +284,17 @@ ggplot(data = county, aes(x = homeownership, y = poverty, group = metro)) +
     y = "poverty",
     title = "Plot F"
   )
+# Arrange the plots using grid.arrange
+grid.arrange(plot_E, plot_F, ncol = 2, 
+             widths = c(10,10), 
+             heights = c(10,10))
+
 ```
 
 ```{r 3_plots_G_H, warning = FALSE, message=FALSE}
 
 #Scatter plot shows the segregation of data points based on metro variable, and smoothing line set for the whole data without segregation
-ggplot(data = county, aes(x = homeownership, y = poverty)) +
+plot_G <-ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point(aes(color = metro)) +
   geom_smooth(se = FALSE)+
   labs(
@@ -286,13 +304,17 @@ ggplot(data = county, aes(x = homeownership, y = poverty)) +
   )
 
 #Scatter plot shows the segregation of data points based on metro variable only
-ggplot(data = county, aes(x = homeownership, y = poverty)) +
+plot_H <- ggplot(data = county, aes(x = homeownership, y = poverty)) +
   geom_point(aes(color = metro)) +
   labs(
     x = "homeownership",
     y = "poverty",
     title = "Plot H"
   )
+# Arrange the plots using grid.arrange
+grid.arrange(plot_G, plot_H, ncol = 2, 
+             widths = c(10,10), 
+             heights = c(10,10))
 ```
 
 ## 4 - Rental apartments in SF
@@ -341,7 +363,9 @@ ggplot(data= filtered_data , aes(x = price_per_bedroom)) +
 
 ```
 
-Now, we have the required filtered data. We can proceed with plotting the graph. I am choosing a heatmap plot to show the data, as the goal is to display the varying of rent per bedroom as time passes, and the heatmap can accomplish this goal by showing color gradients for each neighborhood.
+**Observation-** Price distribution for prices is shows in the form of histogram. Prices is the highest in the Twin peaks neighborhood, with median prices at around \$2000 per bedroom. The lowest is in Sea Cliff neighborhood, where median prices is lowest at around \$1400 per bedroom.
+
+I am also choosing a heatmap plot to show the data, as the goal is to display the varying of rent per bedroom as time passes, and the heatmap can accomplish this goal by showing color gradients for each neighborhood.
 
 ```{r 4_plot_heat,warning = FALSE, message=FALSE}
 
@@ -359,7 +383,7 @@ ggplot(data = filtered_data, aes(x = year, y = nhood, fill = price_per_bedroom))
 
 ```
 
-**Observation**- For the above data, the general trend is upwards, i.e. price is increasing as time passes. For some neighborhoods there is a steep increase, and then correction, but overall trend is upwards (positive).
+**Observation**- For the above data, the general trend is upwards, i.e. price is increasing as time passes. For some neighborhoods there is a steep increase, and then correction where the prices fall down, but overall trend is upwards (positive). There are some anomalies as well, due to low number of data points per year.
 
 ## 5 - Napoleon's march.
 
@@ -370,7 +394,6 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
 -   For this exercise, you're asked to describe what your code does (instead of interpreting the visualization, since we already did that in class). If you write the code, it should be straightforward for you to describe it. If you borrow any code from outside resources, you need to understand what that code does, and describe it, ***in your own words***. (This is important, you're allowed to use found code, but you are not allowed to copy someone's blog post or tutorial as your description of their code.)
 
 -   Finally, you should personalize the visualization with your own touch. You can do this in a myriad of ways, e.g., change colors, annotations, labels, etc. This change should be made to make the plot more like the original in some way. You need to explicitly call out what change you made and why you made it.
-
 
     ```{r 5_process_plot,warning = FALSE, message=FALSE}
 
@@ -475,6 +498,8 @@ The instructions for this exercise are simple: recreate the Napoleon's march plo
     grid.arrange(plot_troops_cities_fixed, plot_temp_fixed, nrow=2, heights=c(3.5, 1.2))
     grid.rect(width = .99, height = .99, gp = gpar(lwd = 2, col = "gray", fill = NA))
     ```
-Citation: 
-1) http://euclid.psych.yorku.ca/www/psy6135/tutorials/Minard.html
-2) Minard meets ggplot2, Michael Friendly, January 22, 2018
+
+    Citation:
+
+1)  http://euclid.psych.yorku.ca/www/psy6135/tutorials/Minard.html
+2)  Minard meets ggplot2, Michael Friendly, January 22, 2018
